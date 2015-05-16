@@ -11,15 +11,24 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using AccountActivation.Models;
+using System.Net.Mail;
 
 namespace AccountActivation
 {
     public class EmailService : IIdentityMessageService
     {
-        public Task SendAsync(IdentityMessage message)
+        public async Task SendAsync(IdentityMessage message)
         {
-            // Plug in your email service here to send an email.
-            return Task.FromResult(0);
+            using (var client = new SmtpClient())
+            using (var mailMessage = new MailMessage())
+            {
+                mailMessage.Body = message.Body;
+                mailMessage.To.Add(message.Destination);
+                mailMessage.Subject = message.Subject;
+                mailMessage.IsBodyHtml = true;
+
+                await client.SendMailAsync(mailMessage);
+            }
         }
     }
 
