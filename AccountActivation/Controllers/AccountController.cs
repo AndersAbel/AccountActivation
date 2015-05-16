@@ -258,6 +258,8 @@ namespace AccountActivation.Controllers
             var result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
             if (result.Succeeded)
             {
+                // Automatic sign in after password has been reset.
+                SignInManager.SignIn(user, false, false);
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
             }
             AddErrors(result);
